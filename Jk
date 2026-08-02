@@ -1,0 +1,123 @@
+local R=loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local W=R:CreateWindow({Name="✨ Min Hub | Extended Edition",LoadingTitle="กำลังโหลดระบบ Min Hub...",LoadingSubtitle="by Min Developer",ConfigurationSaving={Enabled=true,FolderName="MinHubConfig",FileName="MasterConfig"},Discord={Enabled=false,Invite="",RememberJoins=true},KeySystem=false})
+local P,RS,UIS,RSig,WS,L,VU=game:GetService("Players"),game:GetService("RunService"),game:GetService("UserInputService"),game:GetService("ReplicatedStorage"),game:GetService("Workspace"),game:GetService("Lighting"),game:GetService("VirtualUser")
+local LP,Cam=P.LocalPlayer,WS.CurrentCamera
+local MT,WSV,JPV,Noc,InfJ,Fly,FS,BGI,BVI=false,16,50,false,false,false,50,nil,nil
+local ESP,ESPN,ESPD,ESPC,FB=false,false,false,Color3.fromRGB(255,0,0),false
+local AP,AC,AB,AS,Seed,FD=false,false,false,false,"Wheat",0.3
+local TP={Shop=CFrame.new(0,10,0),Sell=CFrame.new(50,10,0),FarmArea=CFrame.new(100,10,100),Spawn=CFrame.new(0,20,0),VIPZone=CFrame.new(-150,15,-150)}
+local AntiAFK=true
+
+local function Notify(t,c,d) R:Notify({Title=t,Content=c,Duration=d or 3,Image=4483362458,Actions={Ignore={Name="ตกลง",Callback=function()end}}}) end
+local function TeleportTo(cf) if LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then LP.Character.HumanoidRootPart.CFrame=cf Notify("ระบบวาร์ป","ย้ายตำแหน่งเรียบร้อยแล้ว!",2) else Notify("แจ้งเตือน","ไม่พบตัวละครของคุณในขณะนี้",3) end end
+
+LP.Idled:Connect(function() if AntiAFK then VU:Button2Down(Vector2.zero,Cam.CFrame) task.wait(1) VU:Button2Up(Vector2.zero,Cam.CFrame) end end)
+UIS.JumpRequest:Connect(function() if MT and InfJ and LP.Character and LP.Character:FindFirstChildOfClass("Humanoid") then LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping) end end)
+RS.Stepped:Connect(function() if MT and Noc and LP.Character then for _,v in pairs(LP.Character:GetDescendants()) do if v:IsA("BasePart") and v.CanCollide then v.CanCollide=false end end end end)
+
+RS.RenderStepped:Connect(function()
+    if not MT then if BGI then BGI:Destroy() BGI=nil end if BVI then BVI:Destroy() BVI=nil end return end
+    if LP.Character and LP.Character:FindFirstChildOfClass("Humanoid") then local h=LP.Character:FindFirstChildOfClass("Humanoid") h.WalkSpeed=WSV h.UseJumpPower=true h.JumpPower=JPV end
+    if FB then L.Ambient=Color3.fromRGB(255,255,255) L.Brightness=2 L.ClockTime=14 end
+    for _,p in pairs(P:GetPlayers()) do
+        if p~=LP and p.Character then
+            local c,hl,bb=p.Character,p.Character:FindFirstChild("MinHub_ESP_Highlight"),p.Character:FindFirstChild("MinHub_ESP_Billboard")
+            if ESP then
+                if not hl then hl=Instance.new("Highlight",c) hl.Name="MinHub_ESP_Highlight" hl.OutlineColor=Color3.fromRGB(255,255,255) hl.FillTransparency=0.4 else hl.FillColor=ESPC end
+                if (ESPN or ESPD) and c:FindFirstChild("Head") then
+                    if not bb then
+                        bb=Instance.new("BillboardGui",c) bb.Name="MinHub_ESP_Billboard" bb.Adornee=c.Head bb.Size=UDim2.new(0,200,0,50) bb.StudsOffset=Vector3.new(0,3,0) bb.AlwaysOnTop=true
+                        local l=Instance.new("TextLabel",bb) l.Name="InfoLabel" l.Size=UDim2.new(1,0,1,0) l.BackgroundTransparency=1 l.TextColor3=Color3.fromRGB(255,255,255) l.Font=Enum.Font.SourceSansBold l.TextSize=14
+                    end
+                    local lbl=bb:FindFirstChild("InfoLabel")
+                    if lbl then
+                        local txt=""
+                        if ESPN then txt=txt..p.Name end
+                        if ESPD and LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
+                            txt=txt..(ESPN and " | " or "")..math.floor((c.Head.Position-LP.Character.HumanoidRootPart.Position).Magnitude).."m"
+                        end
+                        lbl.Text=txt
+                    end
+                elseif bb then bb:Destroy() end
+            else if hl then hl:Destroy() end if bb then bb:Destroy() end end
+        end
+    end
+    if Fly and LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp,hum=LP.Character.HumanoidRootPart,LP.Character:FindFirstChildOfClass("Humanoid")
+        if not BGI or not BVI or not BGI.Parent then
+            if BGI then BGI:Destroy() end if BVI then BVI:Destroy() end
+            BGI=Instance.new("BodyGyro",hrp) BGI.P=9e4 BGI.maxTorque=Vector3.new(9e9,9e9,9e9)
+            BVI=Instance.new("BodyVelocity",hrp) BVI.maxForce=Vector3.new(9e9,9e9,9e9)
+        end
+        if hum then hum.PlatformStand=true end BGI.CFrame=Cam.CFrame
+        local dir=Vector3.zero
+        if UIS:IsKeyDown(Enum.KeyCode.W) then dir+=Cam.CFrame.LookVector end
+        if UIS:IsKeyDown(Enum.KeyCode.S) then dir-=Cam.CFrame.LookVector end
+        if UIS:IsKeyDown(Enum.KeyCode.A) then dir-=Cam.CFrame.RightVector end
+        if UIS:IsKeyDown(Enum.KeyCode.D) then dir+=Cam.CFrame.RightVector end
+        if UIS:IsKeyDown(Enum.KeyCode.E) or UIS:IsKeyDown(Enum.KeyCode.Space) then dir+=Vector3.new(0,1,0) end
+        if UIS:IsKeyDown(Enum.KeyCode.Q) or UIS:IsKeyDown(Enum.KeyCode.LeftControl) then dir-=Vector3.new(0,1,0) end
+        BVI.Velocity=dir.Magnitude>0 and dir.Unit*FS or Vector3.zero
+    else
+        if BGI then BGI:Destroy() BGI=nil end if BVI then BVI:Destroy() BVI=nil end
+        if LP.Character and LP.Character:FindFirstChildOfClass("Humanoid") then LP.Character:FindFirstChildOfClass("Humanoid").PlatformStand=false end
+    end
+end)
+
+task.spawn(function()
+    while task.wait(FD) do
+        if MT then
+            if AP then pcall(function() local r=RSig:FindFirstChild("Plant",true) or RSig:FindFirstChild("PlantSeed",true) if r then r:FireServer(Seed) else local t=LP.Backpack:FindFirstChildOfClass("Tool") or (LP.Character and LP.Character:FindFirstChildOfClass("Tool")) if t then t:Activate() end end end) end
+            if AC then pcall(function() local r=RSig:FindFirstChild("Harvest",true) or RSig:FindFirstChild("Collect",true) if r then r:FireServer() else for _,p in pairs(WS:GetDescendants()) do if p:IsA("ProximityPrompt") and LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") and (p.Parent:GetPivot().Position-LP.Character.HumanoidRootPart.Position).Magnitude<18 then fireproximityprompt(p) end end end end) end
+            if AB then pcall(function() local r=RSig:FindFirstChild("BuyItem",true) or RSig:FindFirstChild("BuySeed",true) if r then r:FireServer(Seed,1) end end) end
+            if AS then pcall(function() local r=RSig:FindFirstChild("SellAll",true) or RSig:FindFirstChild("Sell",true) if r then r:FireServer() end end) end
+        end
+    end
+end)
+
+local T1=W:CreateTab("📌 หน้าหลัก",4483362458)
+T1:CreateSection("ระบบสวิตช์หลัก")
+T1:CreateToggle({Name="🔴 Master Toggle (เปิด/ปิด ระบบทั้งหมด)",CurrentValue=false,Callback=function(v) MT=v Notify("สวิตช์หลัก",v and "เปิดใช้งานระบบ Min Hub แล้ว" or "ปิดการทำงานทั้งหมดแล้ว",2) end})
+T1:CreateSection("ความปลอดภัยและการใช้งาน")
+T1:CreateToggle({Name="Anti-AFK (กันหลุดเมื่อยืนนิ่ง)",CurrentValue=true,Callback=function(v) AntiAFK=v end})
+
+local T2=W:CreateTab("🏃 ตัวละคร",4483362458)
+T2:CreateSection("การปรับแต่งความเร็วและการเคลื่อนที่")
+T2:CreateSlider({Name="WalkSpeed (ความเร็วการเดิน)",Range={16,300},Increment=1,CurrentValue=16,Callback=function(v) WSV=v end})
+T2:CreateSlider({Name="Jump Power (แรงกระโดด)",Range={50,300},Increment=5,CurrentValue=50,Callback=function(v) JPV=v end})
+T2:CreateToggle({Name="Noclip (เดินทะลุกำแพง)",CurrentValue=false,Callback=function(v) Noc=v end})
+T2:CreateToggle({Name="Infinite Jump (กระโดดไม่จำกัด)",CurrentValue=false,Callback=function(v) InfJ=v end})
+
+local T3=W:CreateTab("✈️ การบิน",4483362458)
+T3:CreateSection("ตั้งค่าระบบการบิน (Fly Control)")
+T3:CreateToggle({Name="Fly (เปิดระบบบิน)",CurrentValue=false,Callback=function(v) Fly=v end})
+T3:CreateSlider({Name="Fly Speed (ความเร็วการบิน)",Range={10,500},Increment=5,CurrentValue=50,Callback=function(v) FS=v end})
+
+local T4=W:CreateTab("🌾 ระบบฟาร์ม",4483362458)
+T4:CreateSection("ตั้งค่าชนิดพืชและความเร็ว")
+T4:CreateDropdown({Name="เลือกชนิดเมล็ดพันธุ์",Options={"Wheat","Corn","Tomato","Potato","Carrot","Pumpkin","Watermelon"},CurrentOption="Wheat",Callback=function(v) Seed=v end})
+T4:CreateSlider({Name="ความเร็วรอบฟาร์ม (Delay/วินาที)",Range={0.1,2},Increment=0.1,CurrentValue=0.3,Callback=function(v) FD=v end})
+T4:CreateSection("สวิตช์ฟาร์มให้อัตโนมัติ")
+T4:CreateToggle({Name="Auto Plant (ปลูกพืชอัตโนมัติ)",CurrentValue=false,Callback=function(v) AP=v end})
+T4:CreateToggle({Name="Auto Collect (เก็บเกี่ยวอัตโนมัติ)",CurrentValue=false,Callback=function(v) AC=v end})
+T4:CreateToggle({Name="Auto Buy Seeds (ซื้อเมล็ดอัตโนมัติ)",CurrentValue=false,Callback=function(v) AB=v end})
+T4:CreateToggle({Name="Auto Sell (ขายของอัตโนมัติ)",CurrentValue=false,Callback=function(v) AS=v end})
+
+local T5=W:CreateTab("👁️ Visual & ESP",4483362458)
+T5:CreateSection("ระบบมองเห็นผู้เล่น")
+T5:CreateToggle({Name="ESP Player (กล่องเน้นผู้เล่น)",CurrentValue=false,Callback=function(v) ESP=v end})
+T5:CreateToggle({Name="แสดงชื่อผู้เล่น (Show Player Name)",CurrentValue=false,Callback=function(v) ESPN=v end})
+T5:CreateToggle({Name="แสดงระยะทาง (Show Distance)",CurrentValue=false,Callback=function(v) ESPD=v end})
+T5:CreateColorPicker({Name="เลือกสี ESP Color",Color=Color3.fromRGB(255,0,0),Callback=function(v) ESPC=v end})
+T5:CreateSection("ระบบสภาพแวดล้อม")
+T5:CreateToggle({Name="FullBright (สว่างกลางคืน)",CurrentValue=false,Callback=function(v) FB=v if not v then L.Ambient=Color3.fromRGB(127,127,127) end end})
+
+local T6=W:CreateTab("🌐 ระบบวาร์ป",4483362458)
+T6:CreateSection("จุดวาร์ปภายในเกม")
+T6:CreateButton({Name="Shop (ร้านค้า)",Callback=function() if MT then TeleportTo(TP.Shop) end end})
+T6:CreateButton({Name="Sell (จุดขาย)",Callback=function() if MT then TeleportTo(TP.Sell) end end})
+T6:CreateButton({Name="Farm Zone (พื้นที่ฟาร์ม)",Callback=function() if MT then TeleportTo(TP.FarmArea) end end})
+T6:CreateButton({Name="Spawn (จุดเกิดหลัก)",Callback=function() if MT then TeleportTo(TP.Spawn) end end})
+T6:CreateButton({Name="VIP Zone (พื้นที่ VIP)",Callback=function() if MT then TeleportTo(TP.VIPZone) end end})
+
+Notify("Min Hub Loaded","โหลดสคริปต์เวอร์ชันสมบูรณ์เรียบร้อยแล้ว!",4)
